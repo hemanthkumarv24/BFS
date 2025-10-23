@@ -50,6 +50,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import EmployeeLogin from './pages/employee/EmployeeLogin';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import ProtectedEmployeeRoute from './components/ProtectedEmployeeRoute';
+import MoversPackersPage from './pages/MoversPackersPage';
 
 function AppContent() {
   const location = useLocation();
@@ -93,6 +94,7 @@ function AppContent() {
         <Route path="/contact" element={<ContactPage />} />
   <Route path="/team" element={<TeamPage />} />
     <Route path="/green&clean" element={<GreenCleanCart />} />
+        <Route path="/movers-packers" element={<MoversPackersPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/dashboard" element={

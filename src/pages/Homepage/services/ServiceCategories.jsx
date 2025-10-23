@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Car, Bike, Shirt, Shield } from 'lucide-react';
+import { ArrowRight, Car, Bike, Shirt, Shield, Truck } from 'lucide-react';
 
 export default function ServiceCategories() {
   const navigate = useNavigate();
@@ -149,6 +149,16 @@ export default function ServiceCategories() {
       hoverColor: 'hover:bg-orange-100'
     },
     {
+      name: 'Movers & Packers',
+      image: '/services/movers.png',
+      category: 'movers-packers',
+      description: 'Professional relocation services',
+      fallbackIcon: Truck,
+      gradient: 'from-indigo-500 to-purple-500',
+      bgColor: 'bg-indigo-50',
+      hoverColor: 'hover:bg-indigo-100'
+    },
+    {
       name: 'Laundry Service',
       image: '/laundry/home.png',
       category: 'laundry',
@@ -237,7 +247,7 @@ export default function ServiceCategories() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8"
+          className="hidden md:grid grid-cols-2 lg:grid-cols-5 gap-6"
         >
           {categories.map((category, index) => (
             <motion.div
