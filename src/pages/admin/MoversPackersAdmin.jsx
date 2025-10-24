@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, MapPin, Truck, Calendar, Phone, Mail, Home, Package, CheckCircle, XCircle, AlertCircle, Clock, User, RefreshCw, ChevronDown } from 'lucide-react';
+import { Search, Filter, Eye, MapPin, Truck, Calendar, Phone, Mail, Home, Package, CheckCircle, XCircle, Clock, User, RefreshCw } from 'lucide-react';
 import AdminLayout from '../../components/AdminLayout';
 import toast from 'react-hot-toast';
 
@@ -15,6 +15,8 @@ const MoversPackersAdmin = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState(null);
   const [stats, setStats] = useState(null);
 
   // Fetch bookings
@@ -67,6 +69,13 @@ const MoversPackersAdmin = () => {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        window.location.href = '/admin/login';
+        return;
+      }
 
       if (response.ok) {
         const result = await response.json();
@@ -143,11 +152,16 @@ const MoversPackersAdmin = () => {
   };
 
   // Delete booking
-  const deleteBooking = async (bookingId) => {
-    if (!confirm('Are you sure you want to delete this booking?')) return;
+  const confirmDelete = (bookingId) => {
+    setBookingToDelete(bookingId);
+    setShowDeleteConfirm(true);
+  };
+
+  const deleteBooking = async () => {
+    if (!bookingToDelete) return;
 
     try {
-      const response = await fetch(`${API}/api/admin/movers-packers/booking/${bookingId}`, {
+      const response = await fetch(`${API}/api/admin/movers-packers/booking/${bookingToDelete}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
@@ -160,6 +174,8 @@ const MoversPackersAdmin = () => {
         toast.success('Booking deleted successfully');
         fetchBookings(true);
         setShowDetailModal(false);
+        setShowDeleteConfirm(false);
+        setBookingToDelete(null);
       } else {
         toast.error(result.message || 'Failed to delete booking');
       }
@@ -629,13 +645,42 @@ const MoversPackersAdmin = () => {
                     <option value="cancelled">Cancelled</option>
                   </select>
                   <button
-                    onClick={() => deleteBooking(selectedBooking._id)}
+                    onClick={() => confirmDelete(selectedBooking._id)}
                     className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                   >
                     Delete
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Confirm Delete</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this booking? This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setBookingToDelete(null);
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteBooking}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
