@@ -29,7 +29,9 @@ const MoversPackersPage = () => {
   const [moveType, setMoveType] = useState("within-city");
   const [homeSize, setHomeSize] = useState("");
   const [sourceCity, setSourceCity] = useState(null);
+  const [sourceCityText, setSourceCityText] = useState("");
   const [destinationCity, setDestinationCity] = useState(null);
+  const [destinationCityText, setDestinationCityText] = useState("");
   const [movingDate, setMovingDate] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -347,9 +349,11 @@ const MoversPackersPage = () => {
                   Source Address
                 </label>
                 <AddressAutocomplete
-                  onAddressSelect={(address) => setSourceCity(address)}
+                  value={sourceCityText}
+                  onChange={setSourceCityText}
+                  onSelect={(address) => setSourceCity(address)}
                   placeholder="Enter pickup address"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FFB400] focus:outline-none"
+                  showCurrentLocation={true}
                 />
               </div>
               <div>
@@ -357,9 +361,11 @@ const MoversPackersPage = () => {
                   Destination Address
                 </label>
                 <AddressAutocomplete
-                  onAddressSelect={(address) => setDestinationCity(address)}
+                  value={destinationCityText}
+                  onChange={setDestinationCityText}
+                  onSelect={(address) => setDestinationCity(address)}
                   placeholder="Enter destination address"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FFB400] focus:outline-none"
+                  showCurrentLocation={true}
                 />
               </div>
             </div>
