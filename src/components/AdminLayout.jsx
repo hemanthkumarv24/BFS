@@ -6,6 +6,7 @@ import {
   History, 
   Ticket, 
   UserCheck,
+  Truck,
   Menu, 
   X,
   LogOut
@@ -33,6 +34,12 @@ const AdminLayout = ({ children }) => {
       href: '/admin/bookings',
       icon: History,
       active: location.pathname === '/admin/bookings'
+    },
+    {
+      name: 'Movers & Packers',
+      href: '/admin/movers-packers',
+      icon: Truck,
+      active: location.pathname === '/admin/movers-packers'
     },
     {
       name: 'Employee Management',
