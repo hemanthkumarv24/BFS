@@ -1,13 +1,63 @@
 // Controller for Movers & Packers services - Category B
 // BFS FULL ITEM SHIFTING SERVICES (Local Bangalore)
 
-// Distance pricing calculator
+// Distance pricing tiers (defined first so it can be used by calculator)
+const distancePricing = [
+  {
+    range: '0-5 km',
+    minKm: 0,
+    maxKm: 5,
+    charge: 0,
+    description: 'Base price includes 0-5 km'
+  },
+  {
+    range: '5-10 km',
+    minKm: 5,
+    maxKm: 10,
+    charge: 150,
+    description: 'Additional ₹150 for 5-10 km'
+  },
+  {
+    range: '10-20 km',
+    minKm: 10,
+    maxKm: 20,
+    charge: 250,
+    description: 'Additional ₹250 for 10-20 km'
+  },
+  {
+    range: '20-30 km',
+    minKm: 20,
+    maxKm: 30,
+    charge: 350,
+    description: 'Additional ₹350 for 20-30 km'
+  },
+  {
+    range: '30+ km',
+    minKm: 30,
+    maxKm: null,
+    charge: 10,
+    chargeType: 'per_km',
+    description: '₹10 per km after 30 km'
+  }
+];
+
+// Distance pricing calculator (uses distancePricing array)
 const calculateDistanceCharge = (distance) => {
-  if (distance <= 5) return 0;
-  if (distance <= 10) return 150;
-  if (distance <= 20) return 250;
-  if (distance <= 30) return 350;
-  return Math.ceil((distance - 30) * 10);
+  // Find the appropriate pricing tier
+  for (let i = 0; i < distancePricing.length; i++) {
+    const tier = distancePricing[i];
+    
+    if (tier.maxKm === null) {
+      // This is the 30+ km tier
+      if (distance > tier.minKm) {
+        return Math.ceil((distance - tier.minKm) * tier.charge);
+      }
+    } else if (distance > tier.minKm && distance <= tier.maxKm) {
+      return tier.charge;
+    }
+  }
+  
+  return 0; // 0-5 km range
 };
 
 // Calculate total price based on base price and distance
@@ -335,46 +385,6 @@ const moversPackersServices = [
   }
 ];
 
-// Distance pricing tiers
-const distancePricing = [
-  {
-    range: '0-5 km',
-    minKm: 0,
-    maxKm: 5,
-    charge: 0,
-    description: 'Base price includes 0-5 km'
-  },
-  {
-    range: '5-10 km',
-    minKm: 5,
-    maxKm: 10,
-    charge: 150,
-    description: 'Additional ₹150 for 5-10 km'
-  },
-  {
-    range: '10-20 km',
-    minKm: 10,
-    maxKm: 20,
-    charge: 250,
-    description: 'Additional ₹250 for 10-20 km'
-  },
-  {
-    range: '20-30 km',
-    minKm: 20,
-    maxKm: 30,
-    charge: 350,
-    description: 'Additional ₹350 for 20-30 km'
-  },
-  {
-    range: '30+ km',
-    minKm: 30,
-    maxKm: null,
-    charge: 10,
-    chargeType: 'per_km',
-    description: '₹10 per km after 30 km'
-  }
-];
-
 /**
  * Get all movers and packers services
  * @route GET /api/movers-packers
@@ -443,10 +453,20 @@ export const calculateServicePrice = (req, res) => {
   try {
     const { serviceId, distance } = req.body;
 
+    // Validate input
     if (!serviceId || distance === undefined) {
       return res.status(400).json({
         success: false,
         message: 'Service ID and distance are required'
+      });
+    }
+
+    // Validate distance is a valid positive number
+    const numDistance = Number(distance);
+    if (!Number.isFinite(numDistance) || numDistance < 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Distance must be a valid positive number'
       });
     }
 
@@ -459,8 +479,8 @@ export const calculateServicePrice = (req, res) => {
       });
     }
 
-    const distanceCharge = calculateDistanceCharge(distance);
-    const totalPrice = calculateTotalPrice(service.basePrice, distance);
+    const distanceCharge = calculateDistanceCharge(numDistance);
+    const totalPrice = calculateTotalPrice(service.basePrice, numDistance);
 
     res.status(200).json({
       success: true,
@@ -473,12 +493,12 @@ export const calculateServicePrice = (req, res) => {
         basePrice: service.basePrice,
         distanceCharge: distanceCharge,
         totalPrice: totalPrice,
-        distance: distance,
+        distance: numDistance,
         currency: '₹'
       },
       breakdown: {
         basePrice: `₹${service.basePrice} (0-5 km included)`,
-        distanceCharge: distance <= 5 ? 'Included' : `₹${distanceCharge}`,
+        distanceCharge: numDistance <= 5 ? 'Included' : `₹${distanceCharge}`,
         total: `₹${totalPrice}`
       }
     });
