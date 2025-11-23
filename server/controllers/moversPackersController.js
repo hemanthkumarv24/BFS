@@ -52,12 +52,12 @@ const calculateDistanceCharge = (distance) => {
       if (distance > tier.minKm) {
         return Math.ceil((distance - tier.minKm) * tier.charge);
       }
-    } else if (distance > tier.minKm && distance <= tier.maxKm) {
+    } else if (distance >= tier.minKm && distance <= tier.maxKm) {
       return tier.charge;
     }
   }
   
-  return 0; // 0-5 km range
+  return 0; // Fallback (should not reach here with proper data)
 };
 
 // Calculate total price based on base price and distance
@@ -463,10 +463,10 @@ export const calculateServicePrice = (req, res) => {
 
     // Validate distance is a valid positive number
     const numDistance = Number(distance);
-    if (!Number.isFinite(numDistance) || numDistance < 0) {
+    if (!Number.isFinite(numDistance) || numDistance <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'Distance must be a valid positive number'
+        message: 'Distance must be a valid positive number greater than 0'
       });
     }
 
