@@ -20,7 +20,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
-import AddressAutocomplete from '../components/AddressAutocomplete';
+import MapboxLocationPicker from '../components/MapboxLocationPicker';
 import { moversAPI } from '../api/movers';
 import toast from 'react-hot-toast';
 
@@ -273,7 +273,7 @@ export default function MoversPackersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -282,35 +282,39 @@ export default function MoversPackersPage() {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Truck className="w-12 h-12 text-blue-600" />
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-4 rounded-2xl shadow-lg">
+              <Truck className="w-12 h-12 text-white" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
               Movers & Packers
             </h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
             Professional and reliable moving services for your home. 
-            Book now for a hassle-free relocation experience!
+            Book now for a hassle-free relocation experience with our expert team!
           </p>
         </motion.div>
 
         {/* Features */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           {[
-            { icon: Shield, title: 'Insured Moving', desc: 'Your belongings are safe' },
-            { icon: Clock, title: 'On-Time Service', desc: 'Punctual and reliable' },
-            { icon: Star, title: 'Expert Team', desc: 'Trained professionals' },
-            { icon: Package, title: 'Quality Packing', desc: 'Premium materials' }
+            { icon: Shield, title: 'Insured Moving', desc: 'Your belongings are safe', color: 'from-blue-500 to-blue-600' },
+            { icon: Clock, title: 'On-Time Service', desc: 'Punctual and reliable', color: 'from-green-500 to-green-600' },
+            { icon: Star, title: 'Expert Team', desc: 'Trained professionals', color: 'from-purple-500 to-purple-600' },
+            { icon: Package, title: 'Quality Packing', desc: 'Premium materials', color: 'from-orange-500 to-orange-600' }
           ].map((feature, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl p-6 shadow-md text-center"
+              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100"
             >
-              <feature.icon className="w-10 h-10 text-blue-600 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
-              <p className="text-sm text-gray-600">{feature.desc}</p>
+              <div className={`bg-gradient-to-br ${feature.color} w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3`}>
+                <feature.icon className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1 text-center">{feature.title}</h3>
+              <p className="text-sm text-gray-600 text-center">{feature.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -320,33 +324,35 @@ export default function MoversPackersPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl shadow-xl p-8 md:p-12"
+          className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-100"
         >
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Move Type Selection */}
             <div>
-              <label className="block text-lg font-semibold text-gray-900 mb-4">
+              <label className="block text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Truck className="w-5 h-5 mr-2 text-blue-600" />
                 Select Move Type *
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { value: 'within-city', label: 'Within City', icon: Home },
-                  { value: 'intercity', label: 'Intercity', icon: Truck }
+                  { value: 'within-city', label: 'Within City', icon: Home, desc: 'Local moving within city' },
+                  { value: 'intercity', label: 'Intercity', icon: Truck, desc: 'Moving to another city' }
                 ].map((type) => (
                   <button
                     key={type.value}
                     type="button"
                     onClick={() => setMoveType(type.value)}
-                    className={`p-6 rounded-xl border-2 transition-all ${
+                    className={`p-6 rounded-xl border-2 transition-all duration-200 ${
                       moveType === type.value
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-300'
+                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md'
+                        : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
                     }`}
                   >
-                    <type.icon className={`w-8 h-8 mx-auto mb-2 ${
+                    <type.icon className={`w-10 h-10 mx-auto mb-2 transition-colors ${
                       moveType === type.value ? 'text-blue-600' : 'text-gray-400'
                     }`} />
-                    <div className="font-semibold text-gray-900">{type.label}</div>
+                    <div className="font-bold text-gray-900 mb-1">{type.label}</div>
+                    <div className="text-sm text-gray-600">{type.desc}</div>
                   </button>
                 ))}
               </div>
@@ -354,7 +360,8 @@ export default function MoversPackersPage() {
 
             {/* Home Size */}
             <div>
-              <label className="block text-lg font-semibold text-gray-900 mb-4">
+              <label className="block text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Home className="w-5 h-5 mr-2 text-blue-600" />
                 Select Home Size *
               </label>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -363,59 +370,70 @@ export default function MoversPackersPage() {
                     key={size.value}
                     type="button"
                     onClick={() => setHomeSize(size.value)}
-                    className={`p-4 rounded-lg border-2 transition-all ${
+                    className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                       homeSize === size.value
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-300'
+                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md scale-105'
+                        : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
                     }`}
                   >
-                    <div className="font-semibold text-gray-900">{size.label}</div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      ₹{moveType === 'within-city' ? size.basePrice.withinCity : size.basePrice.intercity}
+                    <div className="font-bold text-gray-900">{size.label}</div>
+                    <div className="text-sm text-blue-600 font-semibold mt-1">
+                      ₹{(moveType === 'within-city' ? size.basePrice.withinCity : size.basePrice.intercity).toLocaleString()}
                     </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Addresses */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Addresses with Interactive Maps */}
+            <div className="space-y-8">
               <div>
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <MapPin className="inline w-5 h-5 mr-2" />
-                  Source Address *
+                  <MapPin className="inline w-5 h-5 mr-2 text-blue-600" />
+                  Source Address (Pickup Location) *
                 </label>
-                <AddressAutocomplete
+                <MapboxLocationPicker
                   value={sourceAddress}
                   onChange={setSourceAddress}
                   onSelect={handleSourceSelect}
-                  placeholder="Enter pickup address"
+                  placeholder="Search or select pickup location on map"
                   className="w-full"
+                  initialCoords={sourceCoords}
                 />
               </div>
               <div>
                 <label className="block text-lg font-semibold text-gray-900 mb-3">
-                  <MapPin className="inline w-5 h-5 mr-2" />
-                  Destination Address *
+                  <MapPin className="inline w-5 h-5 mr-2 text-green-600" />
+                  Destination Address (Drop-off Location) *
                 </label>
-                <AddressAutocomplete
+                <MapboxLocationPicker
                   value={destinationAddress}
                   onChange={setDestinationAddress}
                   onSelect={handleDestinationSelect}
-                  placeholder="Enter destination address"
+                  placeholder="Search or select destination location on map"
                   className="w-full"
+                  initialCoords={destinationCoords}
                 />
               </div>
             </div>
 
             {/* Distance Display */}
             {estimatedDistance > 0 && (
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border-2 border-blue-200 shadow-sm"
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700">Estimated Distance:</span>
-                  <span className="font-semibold text-blue-700">{estimatedDistance} km</span>
+                  <div className="flex items-center">
+                    <div className="bg-blue-500 p-2 rounded-lg mr-3">
+                      <MapPin className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Estimated Distance:</span>
+                  </div>
+                  <span className="text-2xl font-bold text-blue-700">{estimatedDistance} km</span>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Moving Date */}
@@ -582,74 +600,86 @@ export default function MoversPackersPage() {
 
             {/* Price Summary */}
             {homeSize && (
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Price Summary</h3>
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-gray-700">
-                    <span>Base Price ({HOME_SIZES.find(h => h.value === homeSize)?.label}):</span>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-blue-300 shadow-lg"
+              >
+                <div className="flex items-center mb-4">
+                  <div className="bg-gradient-to-br from-blue-600 to-purple-600 p-2 rounded-lg mr-3">
+                    <Package className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Price Summary</h3>
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-gray-700 py-2 border-b border-gray-200">
+                    <span className="font-medium">Base Price ({HOME_SIZES.find(h => h.value === homeSize)?.label}):</span>
                     <span className="font-semibold">
-                      ₹{moveType === 'within-city' 
+                      ₹{(moveType === 'within-city' 
                         ? HOME_SIZES.find(h => h.value === homeSize)?.basePrice.withinCity 
-                        : HOME_SIZES.find(h => h.value === homeSize)?.basePrice.intercity}
+                        : HOME_SIZES.find(h => h.value === homeSize)?.basePrice.intercity).toLocaleString()}
                     </span>
                   </div>
                   {vehicleShifting && vehicleType && (
-                    <div className="flex justify-between text-gray-700">
-                      <span>Vehicle Shifting ({VEHICLE_TYPES.find(v => v.value === vehicleType)?.label}):</span>
-                      <span className="font-semibold">
-                        +₹{VEHICLE_TYPES.find(v => v.value === vehicleType)?.charge}
+                    <div className="flex justify-between text-gray-700 py-2 border-b border-gray-200">
+                      <span className="font-medium">Vehicle Shifting ({VEHICLE_TYPES.find(v => v.value === vehicleType)?.label}):</span>
+                      <span className="font-semibold text-green-600">
+                        +₹{VEHICLE_TYPES.find(v => v.value === vehicleType)?.charge.toLocaleString()}
                       </span>
                     </div>
                   )}
                   {paintingServices.interior && (
-                    <div className="flex justify-between text-gray-700">
-                      <span>Interior Painting:</span>
-                      <span className="font-semibold">+₹5,000</span>
+                    <div className="flex justify-between text-gray-700 py-2 border-b border-gray-200">
+                      <span className="font-medium">Interior Painting:</span>
+                      <span className="font-semibold text-green-600">+₹5,000</span>
                     </div>
                   )}
                   {paintingServices.exterior && (
-                    <div className="flex justify-between text-gray-700">
-                      <span>Exterior Painting:</span>
-                      <span className="font-semibold">+₹7,000</span>
+                    <div className="flex justify-between text-gray-700 py-2 border-b border-gray-200">
+                      <span className="font-medium">Exterior Painting:</span>
+                      <span className="font-semibold text-green-600">+₹7,000</span>
                     </div>
                   )}
                   {paintingServices.wood && (
-                    <div className="flex justify-between text-gray-700">
-                      <span>Wood Painting:</span>
-                      <span className="font-semibold">+₹3,000</span>
+                    <div className="flex justify-between text-gray-700 py-2 border-b border-gray-200">
+                      <span className="font-medium">Wood Painting:</span>
+                      <span className="font-semibold text-green-600">+₹3,000</span>
                     </div>
                   )}
                   {moveType === 'intercity' && estimatedDistance > 100 && (
-                    <div className="flex justify-between text-gray-700">
-                      <span>Distance Charge ({estimatedDistance - 100} km × ₹15):</span>
-                      <span className="font-semibold">+₹{(estimatedDistance - 100) * 15}</span>
+                    <div className="flex justify-between text-gray-700 py-2 border-b border-gray-200">
+                      <span className="font-medium">Distance Charge ({estimatedDistance - 100} km × ₹15):</span>
+                      <span className="font-semibold text-green-600">+₹{((estimatedDistance - 100) * 15).toLocaleString()}</span>
                     </div>
                   )}
                 </div>
-                <div className="border-t-2 border-blue-300 pt-3 flex justify-between items-center">
-                  <span className="text-xl font-bold text-gray-900">Total Amount:</span>
-                  <span className="text-3xl font-bold text-blue-600">
-                    ₹{calculateTotalPrice().toLocaleString()}
-                  </span>
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-4 mt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xl font-bold text-white">Total Amount:</span>
+                    <span className="text-3xl font-bold text-white">
+                      ₹{calculateTotalPrice().toLocaleString()}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-purple-600 hover:from-blue-700 hover:via-blue-800 hover:to-purple-700 text-white font-bold py-5 px-8 rounded-xl transition-all shadow-lg hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg transform hover:scale-[1.02] active:scale-[0.98]"
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                   Processing...
                 </>
               ) : (
                 <>
-                  Book Now & Pay
-                  <ChevronRight className="w-5 h-5" />
+                  <CheckCircle2 className="w-6 h-6" />
+                  Book Now & Proceed to Payment
+                  <ChevronRight className="w-6 h-6" />
                 </>
               )}
             </button>
