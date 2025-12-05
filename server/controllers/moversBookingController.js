@@ -7,6 +7,27 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
+// Status constants
+const BOOKING_STATUS = {
+  CREATED: 'created',
+  CONFIRMED: 'confirmed',
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled'
+};
+
+const PAYMENT_STATUS = {
+  PENDING: 'pending',
+  PAID: 'paid',
+  FAILED: 'failed'
+};
+
+const PAYMENT_METHOD = {
+  ONLINE: 'online',
+  COD: 'cod',
+  UPI: 'upi'
+};
+
 // Generate booking number
 const generateBookingNumber = () => {
   const prefix = 'MP';
@@ -95,8 +116,8 @@ export const createMoversBooking = async (req, res) => {
     }
 
     // Validate payment method
-    const validPaymentMethods = ['online', 'cod', 'upi'];
-    const selectedPaymentMethod = paymentMethod || 'online';
+    const validPaymentMethods = [PAYMENT_METHOD.ONLINE, PAYMENT_METHOD.COD, PAYMENT_METHOD.UPI];
+    const selectedPaymentMethod = paymentMethod || PAYMENT_METHOD.ONLINE;
     if (!validPaymentMethods.includes(selectedPaymentMethod)) {
       return res.status(400).json({
         success: false,
@@ -141,15 +162,15 @@ export const createMoversBooking = async (req, res) => {
       notes,
       payment: {
         method: selectedPaymentMethod,
-        status: selectedPaymentMethod === 'cod' ? 'pending' : 'pending'
+        status: PAYMENT_STATUS.PENDING
       },
-      status: selectedPaymentMethod === 'cod' ? 'confirmed' : 'created'
+      status: selectedPaymentMethod === PAYMENT_METHOD.COD ? BOOKING_STATUS.CONFIRMED : BOOKING_STATUS.CREATED
     });
 
     await booking.save();
 
     // If payment method is COD, skip Razorpay and return success
-    if (selectedPaymentMethod === 'cod') {
+    if (selectedPaymentMethod === PAYMENT_METHOD.COD) {
       return res.status(201).json({
         success: true,
         message: 'Booking created successfully with Cash on Delivery',
@@ -223,8 +244,8 @@ export const verifyMoversPayment = async (req, res) => {
     if (razorpay_signature === expectedSign) {
       // Update booking payment status
       booking.payment.razorpayPaymentId = razorpay_payment_id;
-      booking.payment.status = 'paid';
-      booking.status = 'confirmed';
+      booking.payment.status = PAYMENT_STATUS.PAID;
+      booking.status = BOOKING_STATUS.CONFIRMED;
       await booking.save();
 
       res.json({
@@ -233,7 +254,7 @@ export const verifyMoversPayment = async (req, res) => {
         data: booking
       });
     } else {
-      booking.payment.status = 'failed';
+      booking.payment.status = PAYMENT_STATUS.FAILED;
       await booking.save();
 
       res.status(400).json({
@@ -320,9 +341,9 @@ export const updateMoversBookingStatus = async (req, res) => {
       booking.adminNotes = adminNotes;
     }
 
-    if (status === 'completed') {
+    if (status === BOOKING_STATUS.COMPLETED) {
       booking.completedAt = new Date();
-    } else if (status === 'cancelled') {
+    } else if (status === BOOKING_STATUS.CANCELLED) {
       booking.cancelledAt = new Date();
     }
 

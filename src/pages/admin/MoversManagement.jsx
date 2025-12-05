@@ -19,7 +19,7 @@ import {
 import AdminLayout from '../../components/AdminLayout';
 import toast from 'react-hot-toast';
 
-const API = import.meta.env.VITE_API_URL || window.location.origin;
+const API = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : '');
 
 const MoversManagement = () => {
   const [bookings, setBookings] = useState([]);

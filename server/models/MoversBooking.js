@@ -164,7 +164,7 @@ const moversBookingSchema = new mongoose.Schema({
   payment: {
     method: {
       type: String,
-      enum: ['online', 'cod', 'upi'],
+      enum: ['online', 'cod', 'upi', 'razorpay', 'cash'], // Support both old and new values
       default: 'online'
     },
     razorpayOrderId: {

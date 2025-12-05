@@ -3,8 +3,6 @@
  * Handles API calls with automatic token validation and error handling
  */
 
-const API = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-
 /**
  * Make an authenticated API call with automatic error handling
  * @param {string} url - The API endpoint URL
@@ -54,35 +52,11 @@ export async function authenticatedFetch(url, options = {}, onUnauthorized = nul
 }
 
 /**
- * Setup global fetch interceptor for handling 401 errors
- * This wraps the native fetch to automatically handle expired tokens
+ * Create a wrapper for fetch that handles authentication errors
+ * This can be used as a drop-in replacement for fetch in API calls
  */
-export function setupApiInterceptor(onUnauthorized) {
-  const originalFetch = window.fetch;
-  
-  window.fetch = async function(...args) {
-    const response = await originalFetch.apply(this, args);
-    
-    // Check if this is an API call (starts with /api or includes API domain)
-    const url = args[0];
-    const isApiCall = typeof url === 'string' && (
-      url.startsWith('/api') || 
-      url.startsWith(`${API}/api`) ||
-      url.includes('/api/')
-    );
-    
-    // If it's an API call and returns 401, handle token expiration
-    if (isApiCall && response.status === 401) {
-      console.log('API returned 401, clearing auth data');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Call the callback
-      if (onUnauthorized && typeof onUnauthorized === 'function') {
-        onUnauthorized();
-      }
-    }
-    
-    return response;
+export function createAuthenticatedFetch(onUnauthorized) {
+  return async function(url, options = {}) {
+    return authenticatedFetch(url, options, onUnauthorized);
   };
 }
