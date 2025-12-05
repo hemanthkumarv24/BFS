@@ -35,6 +35,12 @@ const MapboxLocationPicker = ({
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`
       );
+      
+      if (!response.ok) {
+        console.error('Reverse geocoding API request failed:', response.status);
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.features && data.features.length > 0) {
@@ -81,6 +87,13 @@ const MapboxLocationPicker = ({
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&country=IN&limit=5&autocomplete=true`
       );
+      
+      if (!response.ok) {
+        console.error('Geocoding API request failed:', response.status);
+        setSuggestions([]);
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.features) {
@@ -239,7 +252,7 @@ const MapboxLocationPicker = ({
 
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-50 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto mb-2">
+        <div className="absolute z-50 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto mb-2 mt-2">
           {suggestions.map((suggestion) => (
             <div
               key={suggestion.id}
@@ -286,6 +299,10 @@ const MapboxLocationPicker = ({
                   setMarkerPosition(newPosition);
                   setViewport({ ...newPosition, zoom: 15 });
                   reverseGeocode(e.coords.latitude, e.coords.longitude);
+                }}
+                onError={(error) => {
+                  console.error('Geolocation error:', error);
+                  // User-friendly error messages are handled by the GeolocateControl itself
                 }}
               />
               

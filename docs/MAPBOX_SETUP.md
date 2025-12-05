@@ -22,6 +22,11 @@ The Packers & Movers page now uses Mapbox for interactive location selection, pr
 4. Create a new token or use the default public token
 5. Copy your access token
 
+**Security Note:** The token is exposed in client-side code. For production use:
+- Use Mapbox's URL restrictions to limit token usage to your domain
+- Consider implementing a backend proxy for API calls in high-traffic scenarios
+- Monitor usage in your Mapbox dashboard and set up billing alerts
+
 ### 2. Configure Environment Variable
 
 1. Create a `.env` file in the project root (if it doesn't exist)
