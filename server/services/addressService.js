@@ -28,7 +28,7 @@ class AddressService {
             const context = feature.context || [];
             
             // Extract city, state, and pincode from context
-            let city = feature.place_type?.includes('place') ? feature.text : '';
+            let city = Array.isArray(feature.place_type) && feature.place_type.includes('place') ? feature.text : '';
             let state = '';
             let pincode = '';
             let country = '';
@@ -149,7 +149,7 @@ class AddressService {
               success: true,
               data: response.body.features.map(feature => {
                 const context = feature.context || [];
-                let city = feature.place_type?.includes('place') ? feature.text : '';
+                let city = Array.isArray(feature.place_type) && feature.place_type.includes('place') ? feature.text : '';
                 let state = '';
                 let pincode = '';
                 let country = '';
@@ -269,7 +269,7 @@ class AddressService {
               success: true,
               data: response.body.features.map(feature => {
                 const context = feature.context || [];
-                let city = feature.place_type?.includes('place') ? feature.text : '';
+                let city = Array.isArray(feature.place_type) && feature.place_type.includes('place') ? feature.text : '';
                 let state = '';
                 let pincode = '';
                 

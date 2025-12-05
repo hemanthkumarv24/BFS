@@ -12,6 +12,31 @@ const MapboxLocationPicker = ({
   initialLocation,
   title = "Select Location"
 }) => {
+  // Check if Mapbox token is configured
+  if (!MAPBOX_TOKEN && isOpen) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MapPin className="w-8 h-8 text-red-600" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Mapbox Not Configured</h2>
+            <p className="text-gray-600 mb-4">
+              The Mapbox access token is not configured. Please add VITE_MAPBOX_ACCESS_TOKEN to your .env file.
+            </p>
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-[#FFB400] text-white rounded-lg font-semibold hover:bg-[#e0a000]"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   const [viewState, setViewState] = useState({
     longitude: initialLocation?.longitude || 77.5946, // Bangalore default
     latitude: initialLocation?.latitude || 12.9716,
