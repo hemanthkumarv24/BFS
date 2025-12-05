@@ -5,7 +5,8 @@ import {
   getMoversBooking,
   getMoversBookingsByPhone,
   updateMoversBookingStatus,
-  getAllMoversBookings
+  getAllMoversBookings,
+  assignEmployeeToBooking
 } from '../controllers/moversBookingController.js';
 import { authenticateAdmin } from '../middleware/authAdmin.js';
 
@@ -20,5 +21,6 @@ router.get('/phone/:phone', getMoversBookingsByPhone);
 // Admin routes
 router.get('/admin/all', authenticateAdmin, getAllMoversBookings);
 router.put('/:id/status', authenticateAdmin, updateMoversBookingStatus);
+router.put('/:id/assign', authenticateAdmin, assignEmployeeToBooking);
 
 export default router;

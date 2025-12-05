@@ -40,6 +40,7 @@ import UserManagement from './pages/admin/UserManagement';
 import BookingHistory from './pages/admin/BookingHistory';
 import CouponManagement from './pages/admin/CouponManagement';
 import EmployeeManagement from './pages/admin/EmployeeManagement';
+import MoversManagement from './pages/admin/MoversManagement';
 import EmployeeDashboard from './pages/employee/EmployeeDashboard';
 import EmployeeAssignments from './pages/employee/EmployeeAssignments';
 import EmployeeCompleted from './pages/employee/EmployeeCompleted';
@@ -120,6 +121,11 @@ function AppContent() {
         <Route path="/admin/coupons" element={
           <ProtectedAdminRoute>
             <CouponManagement />
+          </ProtectedAdminRoute>
+        } />
+        <Route path="/admin/movers" element={
+          <ProtectedAdminRoute>
+            <MoversManagement />
           </ProtectedAdminRoute>
         } />
         <Route path="/employee/login" element={<EmployeeLogin />} />

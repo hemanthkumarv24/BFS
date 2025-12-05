@@ -74,6 +74,9 @@ export default function MoversPackersPage() {
     wood: false
   });
   
+  // Payment method
+  const [paymentMethod, setPaymentMethod] = useState('online'); // 'online', 'cod', 'upi'
+  
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [estimatedDistance, setEstimatedDistance] = useState(0);
@@ -178,6 +181,11 @@ export default function MoversPackersPage() {
       return;
     }
 
+    if (!paymentMethod) {
+      toast.error('Please select a payment method');
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
@@ -211,12 +219,21 @@ export default function MoversPackersPage() {
           vehicleType: vehicleShifting ? vehicleType : null
         },
         paintingServices,
-        notes
+        notes,
+        paymentMethod // Include payment method
       };
 
       const result = await moversAPI.createBooking(bookingData);
 
       if (result.success) {
+        // Handle COD booking
+        if (paymentMethod === 'cod') {
+          toast.success('Booking created successfully with Cash on Delivery!');
+          navigate('/orders');
+          return;
+        }
+
+        // Handle online payment
         toast.success('Booking created successfully!');
         
         // Initialize Razorpay payment
@@ -598,6 +615,45 @@ export default function MoversPackersPage() {
               />
             </div>
 
+            {/* Payment Method Selection */}
+            <div className="border-t pt-6">
+              <label className="block text-lg font-semibold text-gray-900 mb-4">
+                Payment Method *
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('online')}
+                  className={`p-5 rounded-xl border-2 transition-all duration-200 ${
+                    paymentMethod === 'online'
+                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md'
+                      : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-bold text-gray-900 text-left">Online Payment (UPI/Card)</div>
+                    {paymentMethod === 'online' && <CheckCircle2 className="w-6 h-6 text-blue-600" />}
+                  </div>
+                  <div className="text-sm text-gray-600 text-left">Pay securely using UPI, Card, or Net Banking</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`p-5 rounded-xl border-2 transition-all duration-200 ${
+                    paymentMethod === 'cod'
+                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-md'
+                      : 'border-gray-200 hover:border-blue-300 hover:shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-bold text-gray-900 text-left">Cash on Delivery (COD)</div>
+                    {paymentMethod === 'cod' && <CheckCircle2 className="w-6 h-6 text-blue-600" />}
+                  </div>
+                  <div className="text-sm text-gray-600 text-left">Pay in cash when the service is delivered</div>
+                </button>
+              </div>
+            </div>
+
             {/* Price Summary */}
             {homeSize && (
               <motion.div 
@@ -678,7 +734,7 @@ export default function MoversPackersPage() {
               ) : (
                 <>
                   <CheckCircle2 className="w-6 h-6" />
-                  Book Now & Proceed to Payment
+                  {paymentMethod === 'cod' ? 'Confirm Booking (COD)' : 'Book Now & Proceed to Payment'}
                   <ChevronRight className="w-6 h-6" />
                 </>
               )}

@@ -164,8 +164,8 @@ const moversBookingSchema = new mongoose.Schema({
   payment: {
     method: {
       type: String,
-      enum: ['razorpay', 'cash', 'upi'],
-      default: 'razorpay'
+      enum: ['online', 'cod', 'upi'],
+      default: 'online'
     },
     razorpayOrderId: {
       type: String
@@ -177,7 +177,17 @@ const moversBookingSchema = new mongoose.Schema({
       type: String,
       enum: ['pending', 'paid', 'failed'],
       default: 'pending'
+    },
+    paidAmount: {
+      type: Number,
+      min: 0,
+      default: 0
     }
+  },
+  assignedEmployee: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Employee',
+    default: null
   },
   notes: {
     type: String,

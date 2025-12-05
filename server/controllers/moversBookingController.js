@@ -75,7 +75,8 @@ export const createMoversBooking = async (req, res) => {
       distanceKm,
       vehicleShifting,
       paintingServices,
-      notes
+      notes,
+      paymentMethod // 'online', 'cod', or 'upi'
     } = req.body;
 
     // Validate required fields
@@ -90,6 +91,16 @@ export const createMoversBooking = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'All booking details are required'
+      });
+    }
+
+    // Validate payment method
+    const validPaymentMethods = ['online', 'cod', 'upi'];
+    const selectedPaymentMethod = paymentMethod || 'online';
+    if (!validPaymentMethods.includes(selectedPaymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid payment method'
       });
     }
 
@@ -127,12 +138,29 @@ export const createMoversBooking = async (req, res) => {
         additionalCharge: pricing.paintingCharge
       },
       pricing,
-      notes
+      notes,
+      payment: {
+        method: selectedPaymentMethod,
+        status: selectedPaymentMethod === 'cod' ? 'pending' : 'pending'
+      },
+      status: selectedPaymentMethod === 'cod' ? 'confirmed' : 'created'
     });
 
     await booking.save();
 
-    // Create Razorpay order
+    // If payment method is COD, skip Razorpay and return success
+    if (selectedPaymentMethod === 'cod') {
+      return res.status(201).json({
+        success: true,
+        message: 'Booking created successfully with Cash on Delivery',
+        data: {
+          booking,
+          paymentMethod: 'cod'
+        }
+      });
+    }
+
+    // For online/UPI payment, create Razorpay order
     const razorpayOrder = await razorpay.orders.create({
       amount: Math.round(pricing.totalAmount * 100), // Convert to paise
       currency: 'INR',
@@ -310,6 +338,48 @@ export const updateMoversBookingStatus = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to update booking status',
+      error: error.message
+    });
+  }
+};
+
+// Assign employee to movers booking (admin only)
+export const assignEmployeeToBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { employeeId } = req.body;
+
+    if (!employeeId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Employee ID is required'
+      });
+    }
+
+    const booking = await MoversBooking.findById(id);
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    booking.assignedEmployee = employeeId;
+    await booking.save();
+
+    // Populate employee details
+    await booking.populate('assignedEmployee', 'name email phone specialization');
+
+    res.json({
+      success: true,
+      message: 'Employee assigned successfully',
+      data: booking
+    });
+  } catch (error) {
+    console.error('Assign employee to booking error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to assign employee',
       error: error.message
     });
   }
