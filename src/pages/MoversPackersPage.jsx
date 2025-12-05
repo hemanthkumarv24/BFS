@@ -435,23 +435,6 @@ const MoversPackersPage = () => {
                 )}
               </div>
             </div>
-                    setDestinationCity(address);
-                    setDestinationAddressInput(address.fullAddress);
-                  }}
-                  placeholder="Enter destination address"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FFB400] focus:outline-none"
-                  showCurrentLocation={true}
-                />
-                {destinationCity && (
-                  <div className="mt-2 text-sm text-gray-600 flex items-start gap-2">
-                    <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#FFB400]" />
-                    <span className="line-clamp-2">
-                      {destinationCity.fullAddress}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Moving Date */}
             <div>
