@@ -55,6 +55,10 @@ const MoversPackersPage = () => {
   const [loadingQuote, setLoadingQuote] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Coordinates for MapboxLocationPicker
+  const [sourceCoords, setSourceCoords] = useState(null);
+  const [destinationCoords, setDestinationCoords] = useState(null);
+
   // Auto-fill user data
   useEffect(() => {
     if (user) {
@@ -135,6 +139,24 @@ const MoversPackersPage = () => {
     }
   };
 
+  // Handler for source address selection from MapboxLocationPicker
+  const handleSourceSelect = (address) => {
+    setSourceCity(address);
+    setSourceAddressInput(address.fullAddress);
+    if (address.latitude && address.longitude) {
+      setSourceCoords({ latitude: address.latitude, longitude: address.longitude });
+    }
+  };
+
+  // Handler for destination address selection from MapboxLocationPicker
+  const handleDestinationSelect = (address) => {
+    setDestinationCity(address);
+    setDestinationAddressInput(address.fullAddress);
+    if (address.latitude && address.longitude) {
+      setDestinationCoords({ latitude: address.latitude, longitude: address.longitude });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -156,9 +178,8 @@ const MoversPackersPage = () => {
     }
 
     if (!destinationCity?.fullAddress) {
-      // toast.error("Please enter destination address");
-      setDestinationCity(destinationAddressInput);
-      // return;
+      toast.error("Please enter destination address");
+      return;
     }
 
     if (!movingDate) {
@@ -415,8 +436,8 @@ const MoversPackersPage = () => {
                   Source Address (Pickup Location) *
                 </label>
                 <MapboxLocationPicker
-                  value={sourceAddress}
-                  onChange={setSourceAddress}
+                  value={sourceAddressInput}
+                  onChange={setSourceAddressInput}
                   onSelect={handleSourceSelect}
                   placeholder="Search or select pickup location on map"
                   className="w-full"
@@ -429,8 +450,8 @@ const MoversPackersPage = () => {
                   Destination Address (Drop-off Location) *
                 </label>
                 <MapboxLocationPicker
-                  value={destinationAddress}
-                  onChange={setDestinationAddress}
+                  value={destinationAddressInput}
+                  onChange={setDestinationAddressInput}
                   onSelect={handleDestinationSelect}
                   placeholder="Search or select destination location on map"
                   className="w-full"
