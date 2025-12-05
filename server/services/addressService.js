@@ -1,18 +1,71 @@
 // Import node-fetch for compatibility across Node.js versions
 // Node.js 18+ has built-in fetch, but we use node-fetch for consistency
 import fetch from 'node-fetch';
+import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding.js';
 
 class AddressService {
   constructor() {
     this.nominatimBaseUrl = 'https://nominatim.openstreetmap.org';
     this.geocodingBaseUrl = 'https://api.opencagedata.com/geocode/v1';
     this.openCageApiKey = process.env.OPENCAGE_API_KEY; // Add this to your .env file
+    this.mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
+    this.mapboxClient = this.mapboxToken ? mbxGeocoding({ accessToken: this.mapboxToken }) : null;
   }
 
   // Get current location by coordinates
   async reverseGeocode(latitude, longitude) {
     try {
-      // Try OpenCage first if API key is available
+      // Try Mapbox first if API key is available
+      if (this.mapboxClient) {
+        try {
+          const response = await this.mapboxClient.reverseGeocode({
+            query: [longitude, latitude],
+            limit: 1
+          }).send();
+          
+          if (response && response.body && response.body.features && response.body.features.length > 0) {
+            const feature = response.body.features[0];
+            const context = feature.context || [];
+            
+            // Extract city, state, and pincode from context
+            let city = feature.place_type?.includes('place') ? feature.text : '';
+            let state = '';
+            let pincode = '';
+            let country = '';
+            
+            context.forEach(item => {
+              if (item.id.startsWith('place.')) {
+                city = city || item.text;
+              } else if (item.id.startsWith('region.')) {
+                state = item.text;
+              } else if (item.id.startsWith('postcode.')) {
+                pincode = item.text;
+              } else if (item.id.startsWith('country.')) {
+                country = item.text;
+              }
+            });
+            
+            return {
+              success: true,
+              data: {
+                fullAddress: feature.place_name,
+                latitude: feature.center[1],
+                longitude: feature.center[0],
+                city: city,
+                state: state,
+                pincode: pincode,
+                country: country,
+                confidence: 1.0
+              }
+            };
+          }
+        } catch (mapboxError) {
+          console.error('Mapbox reverse geocoding error:', mapboxError);
+          // Fall through to other providers
+        }
+      }
+
+      // Try OpenCage if API key is available
       if (this.openCageApiKey) {
         const response = await fetch(
           `${this.geocodingBaseUrl}/json?q=${latitude}+${longitude}&key=${this.openCageApiKey}&language=en&pretty=1`
@@ -82,7 +135,57 @@ class AddressService {
   // Search addresses by query
   async searchAddresses(query, limit = 5) {
     try {
-      // Try OpenCage first if API key is available
+      // Try Mapbox first if API key is available
+      if (this.mapboxClient) {
+        try {
+          const response = await this.mapboxClient.forwardGeocode({
+            query: query,
+            limit: limit,
+            countries: ['in']
+          }).send();
+          
+          if (response && response.body && response.body.features && response.body.features.length > 0) {
+            return {
+              success: true,
+              data: response.body.features.map(feature => {
+                const context = feature.context || [];
+                let city = feature.place_type?.includes('place') ? feature.text : '';
+                let state = '';
+                let pincode = '';
+                let country = '';
+                
+                context.forEach(item => {
+                  if (item.id.startsWith('place.')) {
+                    city = city || item.text;
+                  } else if (item.id.startsWith('region.')) {
+                    state = item.text;
+                  } else if (item.id.startsWith('postcode.')) {
+                    pincode = item.text;
+                  } else if (item.id.startsWith('country.')) {
+                    country = item.text;
+                  }
+                });
+                
+                return {
+                  fullAddress: feature.place_name,
+                  latitude: feature.center[1],
+                  longitude: feature.center[0],
+                  city: city,
+                  state: state,
+                  pincode: pincode,
+                  country: country,
+                  confidence: 1.0
+                };
+              })
+            };
+          }
+        } catch (mapboxError) {
+          console.error('Mapbox search error:', mapboxError);
+          // Fall through to other providers
+        }
+      }
+
+      // Try OpenCage if API key is available
       if (this.openCageApiKey) {
         const response = await fetch(
           `${this.geocodingBaseUrl}/json?q=${encodeURIComponent(query)}&key=${this.openCageApiKey}&language=en&limit=${limit}&countrycode=in&pretty=1`
@@ -151,6 +254,54 @@ class AddressService {
   // Get address suggestions for autocomplete
   async getAddressSuggestions(query, limit = 5) {
     try {
+      // Try Mapbox first if API key is available
+      if (this.mapboxClient) {
+        try {
+          const response = await this.mapboxClient.forwardGeocode({
+            query: query,
+            limit: limit,
+            countries: ['in'],
+            autocomplete: true
+          }).send();
+          
+          if (response && response.body && response.body.features && response.body.features.length > 0) {
+            return {
+              success: true,
+              data: response.body.features.map(feature => {
+                const context = feature.context || [];
+                let city = feature.place_type?.includes('place') ? feature.text : '';
+                let state = '';
+                let pincode = '';
+                
+                context.forEach(item => {
+                  if (item.id.startsWith('place.')) {
+                    city = city || item.text;
+                  } else if (item.id.startsWith('region.')) {
+                    state = item.text;
+                  } else if (item.id.startsWith('postcode.')) {
+                    pincode = item.text;
+                  }
+                });
+                
+                return {
+                  display_name: feature.place_name,
+                  place_id: feature.id,
+                  latitude: feature.center[1],
+                  longitude: feature.center[0],
+                  city: city,
+                  state: state,
+                  pincode: pincode
+                };
+              })
+            };
+          }
+        } catch (mapboxError) {
+          console.error('Mapbox suggestions error:', mapboxError);
+          // Fall through to Nominatim
+        }
+      }
+
+      // Fallback to Nominatim
       const url = `${this.nominatimBaseUrl}/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=${limit}&countrycode=in`;
       console.log('Fetching address suggestions from:', url);
       

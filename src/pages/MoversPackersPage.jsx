@@ -15,9 +15,11 @@ import {
   Phone,
   Mail,
   ArrowRight,
+  Map as MapIcon,
 } from "lucide-react";
 import { useAuth } from "../components/AuthContext";
 import AddressAutocomplete from "../components/AddressAutocomplete";
+import MapboxLocationPicker from "../components/MapboxLocationPicker";
 
 const API = import.meta.env.VITE_API_URL || window.location.origin;
 
@@ -38,6 +40,10 @@ const MoversPackersPage = () => {
   // Address input values for display
   const [sourceAddressInput, setSourceAddressInput] = useState("");
   const [destinationAddressInput, setDestinationAddressInput] = useState("");
+
+  // Map picker state
+  const [showSourceMapPicker, setShowSourceMapPicker] = useState(false);
+  const [showDestinationMapPicker, setShowDestinationMapPicker] = useState(false);
 
   // Vehicle shifting state
   const [needVehicleShifting, setNeedVehicleShifting] = useState(false);
@@ -134,6 +140,18 @@ const MoversPackersPage = () => {
     } else {
       setVehicles(vehicles.filter((v) => v.type !== type));
     }
+  };
+
+  // Handle source location selection from map
+  const handleSourceLocationSelect = (location) => {
+    setSourceCity(location);
+    setSourceAddressInput(location.fullAddress);
+  };
+
+  // Handle destination location selection from map
+  const handleDestinationLocationSelect = (location) => {
+    setDestinationCity(location);
+    setDestinationAddressInput(location.fullAddress);
   };
 
   const handleSubmit = async (e) => {
@@ -350,19 +368,29 @@ const MoversPackersPage = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-lg font-semibold text-gray-800 mb-3">
-                  Source Address *
+                  Pickup Location *
                 </label>
-                <AddressAutocomplete
-                  value={sourceAddressInput}
-                  onChange={setSourceAddressInput}
-                  onAddressSelect={(address) => {
-                    setSourceCity(address);
-                    setSourceAddressInput(address.fullAddress);
-                  }}
-                  placeholder="Enter pickup address"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FFB400] focus:outline-none"
-                  showCurrentLocation={true}
-                />
+                <div className="space-y-3">
+                  <AddressAutocomplete
+                    value={sourceAddressInput}
+                    onChange={setSourceAddressInput}
+                    onAddressSelect={(address) => {
+                      setSourceCity(address);
+                      setSourceAddressInput(address.fullAddress);
+                    }}
+                    placeholder="Enter pickup address"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FFB400] focus:outline-none"
+                    showCurrentLocation={true}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSourceMapPicker(true)}
+                    className="w-full px-4 py-3 border-2 border-[#FFB400] text-[#1F3C88] rounded-xl font-semibold hover:bg-[#FFF6DB] transition-colors flex items-center justify-center gap-2"
+                  >
+                    <MapIcon className="w-5 h-5" />
+                    Select on Map
+                  </button>
+                </div>
                 {sourceCity && (
                   <div className="mt-2 text-sm text-gray-600 flex items-start gap-2">
                     <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#FFB400]" />
@@ -374,12 +402,39 @@ const MoversPackersPage = () => {
               </div>
               <div>
                 <label className="block text-lg font-semibold text-gray-800 mb-3">
-                  Destination Address *
+                  Drop Location *
                 </label>
-                <AddressAutocomplete
-                  value={destinationAddressInput}
-                  onChange={setDestinationAddressInput}
-                  onAddressSelect={(address) => {
+                <div className="space-y-3">
+                  <AddressAutocomplete
+                    value={destinationAddressInput}
+                    onChange={setDestinationAddressInput}
+                    onAddressSelect={(address) => {
+                      setDestinationCity(address);
+                      setDestinationAddressInput(address.fullAddress);
+                    }}
+                    placeholder="Enter destination address"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#FFB400] focus:outline-none"
+                    showCurrentLocation={true}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDestinationMapPicker(true)}
+                    className="w-full px-4 py-3 border-2 border-[#FFB400] text-[#1F3C88] rounded-xl font-semibold hover:bg-[#FFF6DB] transition-colors flex items-center justify-center gap-2"
+                  >
+                    <MapIcon className="w-5 h-5" />
+                    Select on Map
+                  </button>
+                </div>
+                {destinationCity && (
+                  <div className="mt-2 text-sm text-gray-600 flex items-start gap-2">
+                    <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#FFB400]" />
+                    <span className="line-clamp-2">
+                      {destinationCity.fullAddress}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
                     setDestinationCity(address);
                     setDestinationAddressInput(address.fullAddress);
                   }}
@@ -705,6 +760,23 @@ const MoversPackersPage = () => {
           ))}
         </motion.div>
       </div>
+
+      {/* Mapbox Location Pickers */}
+      <MapboxLocationPicker
+        isOpen={showSourceMapPicker}
+        onClose={() => setShowSourceMapPicker(false)}
+        onLocationSelect={handleSourceLocationSelect}
+        initialLocation={sourceCity}
+        title="Select Pickup Location"
+      />
+      
+      <MapboxLocationPicker
+        isOpen={showDestinationMapPicker}
+        onClose={() => setShowDestinationMapPicker(false)}
+        onLocationSelect={handleDestinationLocationSelect}
+        initialLocation={destinationCity}
+        title="Select Drop Location"
+      />
     </div>
   );
 };
