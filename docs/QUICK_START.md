@@ -252,23 +252,21 @@ Requirements:
 
 ## 🎨 Styling Guidelines
 
-### Color Palette (from HOMEPAGE_REDESIGN.md)
+### Color Palette
+> **Note:** This is a reference for quick access. For complete design system, see [HOMEPAGE_REDESIGN.md](./HOMEPAGE_REDESIGN.md#color-palette)
 
-```css
-/* Primary Colors */
---primary: #1F3C88;
---secondary: #FFB400;
---accent: #2952A3;
+Use these hex values consistently across the application:
 
-/* Semantic Colors */
---success: #10B981;
---error: #EF4444;
---warning: #F59E0B;
-
-/* Neutrals */
---bg-light: #F9FAFB;
---text-dark: #111827;
---text-muted: #6B7280;
+```jsx
+// Recommended: Import from a constants file or use Tailwind classes
+const colors = {
+  primary: '#1F3C88',    // Navy Blue (Tailwind: use custom class)
+  secondary: '#FFB400',  // Golden Yellow
+  accent: '#2952A3',     // Medium Blue
+  success: '#10B981',    // Green
+  error: '#EF4444',      // Red
+  warning: '#F59E0B',    // Orange
+};
 ```
 
 ### Tailwind Classes Quick Reference

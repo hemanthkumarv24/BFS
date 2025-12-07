@@ -148,11 +148,11 @@ Reference → All docs for feature understanding
 
 | Document | Size | Lines | Services | Components |
 |----------|------|-------|----------|------------|
-| COPILOT_PROMPTS.md | 47KB | 1,500+ | 12 | 8 |
-| HOMEPAGE_REDESIGN.md | 20KB | 800+ | N/A | 12 sections |
-| SERVICE_DATA_STRUCTURE.md | 34KB | 1,200+ | 10 | N/A |
-| QUICK_START.md | 12KB | 500+ | N/A | Templates |
-| **Total** | **113KB** | **4,000+** | **22** | **20** |
+| COPILOT_PROMPTS.md | 47KB | ~1,860 | 12 | 8 |
+| HOMEPAGE_REDESIGN.md | 20KB | ~800 | N/A | 12 sections |
+| SERVICE_DATA_STRUCTURE.md | 34KB | ~1,340 | 10 | N/A |
+| QUICK_START.md | 12KB | ~550 | N/A | Templates |
+| **Total** | **113KB** | **~4,550** | **22** | **20** |
 
 ---
 

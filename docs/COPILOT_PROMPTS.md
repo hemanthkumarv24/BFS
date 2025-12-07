@@ -1823,14 +1823,16 @@ import { useAuth } from '../../components/AuthContext';
 ```
 
 **Standard Color Palette:**
+> **Note:** Use these hex values consistently. Complete design system in [HOMEPAGE_REDESIGN.md](./HOMEPAGE_REDESIGN.md)
+
 ```javascript
 const colors = {
-  primary: '#1F3C88',
-  secondary: '#FFB400',
-  accent: '#2952A3',
-  success: '#10B981',
-  error: '#EF4444',
-  warning: '#F59E0B'
+  primary: '#1F3C88',    // Navy Blue
+  secondary: '#FFB400',  // Golden Yellow
+  accent: '#2952A3',     // Medium Blue
+  success: '#10B981',    // Green
+  error: '#EF4444',      // Red
+  warning: '#F59E0B'     // Orange
 };
 ```
 

@@ -427,7 +427,7 @@ This document defines the complete data structure for all BFS services including
 
 ### 4. Vehicle Accessories
 
-See separate accessories data structure in next section.
+Vehicle accessories should be added to a separate `vehicleAccessories` array in services.json. See the "Accessory Data Structure Prompt" in COPILOT_PROMPTS.md for the complete structure with 15+ products including seat covers, floor mats, cleaning supplies, etc.
 
 ---
 
