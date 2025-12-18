@@ -31,6 +31,7 @@ Bubble Flash is a comprehensive cleaning service platform based in Bengaluru, of
 - **Mobile Responsive**: Optimized for all devices
 - **Real-time Booking**: Choose pickup date, location, and services
 - **Advertisement Banners**: Special offers and promotions
+- **Telegram Notifications**: Real-time admin alerts for new orders ([Setup Guide](TELEGRAM_SETUP.md))
 
 ## 🛠️ Technology Stack
 

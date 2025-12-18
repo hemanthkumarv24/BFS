@@ -65,6 +65,14 @@ export function formatOrderMessage(order, user) {
 
   lines.push('🆕 NEW BOOKING');
   lines.push(`Order ID: ${order.orderNumber || order._id}`);
+  
+  // Add order link if BASE_URL is configured
+  const baseUrl = process.env.BASE_URL || process.env.FRONTEND_URL;
+  if (baseUrl) {
+    const orderLink = `${baseUrl}/admin/orders`;
+    lines.push(`🔗 [View Order](${orderLink})`);
+  }
+  
   lines.push('');
 
   // Customer Information
