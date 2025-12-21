@@ -16,7 +16,12 @@ import axios from 'axios';
 import { Preferences } from '@capacitor/preferences';
 
 // API Configuration
-const API_BASE_URL = 'https://my-bfs-backend.com/api';
+// TODO: Update this URL to match your backend server
+// For development: Use 'http://10.0.2.2:5000/api' (emulator) or 'http://192.168.x.x:5000/api' (device)
+// For production: Use your actual backend URL (e.g., 'https://api.example.com/api')
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : 'https://my-bfs-backend.com/api';
 const TOKEN_KEY = 'jwt_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 

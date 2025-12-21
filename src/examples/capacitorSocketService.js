@@ -19,7 +19,10 @@ import { getToken } from './capacitorApiService';
 import { PushNotifications } from '@capacitor/push-notifications';
 
 // Socket.IO Configuration
-const SOCKET_URL = 'https://my-bfs-backend.com';
+// TODO: Update this URL to match your backend server
+// For development: Use 'http://10.0.2.2:5000' (emulator) or 'http://192.168.x.x:5000' (device)
+// For production: Use your actual backend URL (e.g., 'https://api.example.com')
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://my-bfs-backend.com';
 let socket = null;
 let isConnected = false;
 
