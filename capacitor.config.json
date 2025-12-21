@@ -1,0 +1,20 @@
+{
+  "appId": "com.bubbleflashservices.bfsapp",
+  "appName": "BFSApp",
+  "webDir": "build",
+  "server": {
+    "url": "https://my-bfs-backend.com",
+    "cleartext": true
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#2563eb",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    }
+  }
+}
