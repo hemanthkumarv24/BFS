@@ -210,6 +210,13 @@ const pricingRanges = {
   'phone-cleaning-diagnostics': { min: 299, max: 499, time: '30-40 minutes' },
 };
 
+// Brand-specific pricing multipliers
+const BRAND_PRICE_MULTIPLIERS = {
+  'Apple': 1.5,        // Premium pricing for Apple devices
+  'Samsung': 1.2,      // Higher pricing for Samsung flagship devices
+  'OnePlus': 1.2,      // Higher pricing for OnePlus devices
+};
+
 const getRandomPrice = (min, max) => {
   return Math.round((Math.random() * (max - min) + min) / 100) * 100;
 };
@@ -264,11 +271,9 @@ const seedMobileFixData = async () => {
           
           let price = getRandomPrice(range.min, range.max);
           
-          if (brand.name === 'Apple') {
-            price = Math.round(price * 1.5);
-          } else if (brand.name === 'Samsung' || brand.name === 'OnePlus') {
-            price = Math.round(price * 1.2);
-          }
+          // Apply brand-specific pricing multiplier
+          const multiplier = BRAND_PRICE_MULTIPLIERS[brand.name] || 1.0;
+          price = Math.round(price * multiplier);
 
           pricingData.push({
             modelId: model._id,
