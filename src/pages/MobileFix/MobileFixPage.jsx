@@ -44,6 +44,9 @@ const MobileFixPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [accessories, setAccessories] = useState([]);
+  const [showCustomBrandModal, setShowCustomBrandModal] = useState(false);
+  const [customBrandName, setCustomBrandName] = useState("");
+  const [customModelName, setCustomModelName] = useState("");
 
   const services = [
     {
@@ -218,6 +221,13 @@ const MobileFixPage = () => {
       toast.error("Invalid brand selection");
       return;
     }
+    
+    // Check if "Others" brand is selected
+    if (brand.name === "Others") {
+      setShowCustomBrandModal(true);
+      return;
+    }
+    
     setSelectedBrand(brand);
     setSelectedModel(null);
     setModels([]);
@@ -225,6 +235,45 @@ const MobileFixPage = () => {
     setPricing(null);
     setAllPricing([]);
     setCurrentStep(2);
+  };
+
+  const handleCustomBrandSubmit = () => {
+    if (!customBrandName.trim() || !customModelName.trim()) {
+      toast.error("Please enter both brand and model name");
+      return;
+    }
+    
+    const othersBrand = brands.find((b) => b.name === "Others");
+    if (!othersBrand) {
+      toast.error("Others brand not found");
+      return;
+    }
+    
+    // Create a custom brand object with the user's input
+    const customBrand = {
+      ...othersBrand,
+      name: customBrandName.trim()
+    };
+    
+    // Create a custom model object with the user's input
+    const customModel = {
+      _id: `custom-${Date.now()}`,
+      name: customModelName.trim(),
+      brandId: othersBrand._id,
+      isCustom: true
+    };
+    
+    setSelectedBrand(customBrand);
+    setSelectedModel(customModel);
+    setModels([customModel]);
+    setShowCustomBrandModal(false);
+    setCustomBrandName("");
+    setCustomModelName("");
+    
+    // Skip to step 3 (service selection) since we already have brand and model
+    setCurrentStep(3);
+    
+    toast.success(`${customBrand.name} ${customModel.name} selected`);
   };
 
   const handleModelSelect = (modelId) => {
@@ -242,6 +291,19 @@ const MobileFixPage = () => {
   const handleServiceSelect = async (service) => {
     if (!selectedModel) {
       toast.error("Please select a phone model first");
+      return;
+    }
+
+    // For custom models, set a default pricing structure
+    if (selectedModel.isCustom) {
+      setSelectedService(service);
+      setPricing({
+        price: 0, // Price will be determined by technician
+        estimatedTime: service.timeRange,
+        serviceType: service.id,
+        isCustomPricing: true
+      });
+      setCurrentStep(4);
       return;
     }
 
@@ -272,9 +334,10 @@ const MobileFixPage = () => {
       return;
     }
 
-    const isFirstTimeBooking = isFirstTime;
+    const isCustomPricing = pricing.isCustomPricing || false;
+    const isFirstTimeBooking = isFirstTime && !isCustomPricing;
     const firstTimeDiscount = isFirstTimeBooking ? 0.15 : 0;
-    const basePrice = pricing.price;
+    const basePrice = isCustomPricing ? 0 : pricing.price;
     const discountAmount = Math.round(basePrice * firstTimeDiscount);
     const finalPrice = basePrice - discountAmount;
 
@@ -291,19 +354,21 @@ const MobileFixPage = () => {
       originalPrice: basePrice,
       discount: discountAmount,
       isFirstTimeBooking: isFirstTimeBooking,
+      isCustomPricing: isCustomPricing,
       quantity: 1,
       features: [
         selectedService.title,
         `${selectedBrand.name} ${selectedModel.name}`,
       ],
       metadata: {
-        brandId: selectedBrand._id,
+        brandId: selectedModel.isCustom ? "custom" : selectedBrand._id,
         brandName: selectedBrand.name,
-        modelId: selectedModel._id,
+        modelId: selectedModel.isCustom ? "custom" : selectedModel._id,
         modelName: selectedModel.name,
         serviceType: selectedService.id,
         estimatedTime: pricing.estimatedTime,
         specialInstructions: specialInstructions,
+        isCustomModel: selectedModel.isCustom || false,
         accessories: accessories.map(acc => ({
           name: acc.name,
           quantity: acc.quantity,
@@ -318,6 +383,9 @@ const MobileFixPage = () => {
     if (isFirstTimeBooking) {
       successMessage += ` 🎉 15% First-Time Discount Applied!`;
     }
+    if (isCustomPricing) {
+      successMessage += ` (Pricing TBD by technician)`;
+    }
 
     toast.success(successMessage, {
       icon: "📱",
@@ -329,6 +397,7 @@ const MobileFixPage = () => {
 
   const calculateFinalPrice = () => {
     if (!pricing) return 0;
+    if (pricing.isCustomPricing) return "TBD"; // To Be Determined
     const basePrice = pricing.price;
     if (isFirstTime) {
       const discount = Math.round((basePrice * 15) / 100);
@@ -540,10 +609,21 @@ const MobileFixPage = () => {
               className="text-center mb-12"
             >
               <button
-                onClick={() => setCurrentStep(2)}
+                onClick={() => {
+                  if (selectedModel?.isCustom) {
+                    // For custom models, go back to brand selection
+                    setCurrentStep(1);
+                    setSelectedBrand(null);
+                    setSelectedModel(null);
+                    setModels([]);
+                  } else {
+                    // For regular models, go back to model selection
+                    setCurrentStep(2);
+                  }
+                }}
                 className="mb-6 text-blue-600 hover:underline flex items-center mx-auto"
               >
-                ← Back to Models
+                ← Back to {selectedModel?.isCustom ? "Brands" : "Models"}
               </button>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 🔧 STEP 3 — Select Repair Service
@@ -564,18 +644,20 @@ const MobileFixPage = () => {
                     (p) => p.serviceType === service.id
                   );
                   const isPriceAvailable = !!servicePricing;
+                  const isCustomModel = selectedModel?.isCustom;
+                  const isClickable = isPriceAvailable || isCustomModel;
 
                   return (
                     <motion.div
                       key={service.id}
-                      whileHover={{ scale: isPriceAvailable ? 1.05 : 1 }}
+                      whileHover={{ scale: isClickable ? 1.05 : 1 }}
                       className={`bg-white rounded-2xl shadow-lg p-6 border-2 border-transparent transition-all ${
-                        isPriceAvailable
+                        isClickable
                           ? "cursor-pointer hover:border-blue-500"
                           : "opacity-50 cursor-not-allowed"
                       }`}
                       onClick={() =>
-                        isPriceAvailable && handleServiceSelect(service)
+                        isClickable && handleServiceSelect(service)
                       }
                     >
                       <div
@@ -596,6 +678,10 @@ const MobileFixPage = () => {
                       {isPriceAvailable ? (
                         <p className="text-2xl font-bold text-blue-600">
                           ₹{servicePricing.price}
+                        </p>
+                      ) : isCustomModel ? (
+                        <p className="text-sm text-orange-600 font-semibold">
+                          Price TBD by technician
                         </p>
                       ) : (
                         <p className="text-sm text-red-500">
@@ -661,22 +747,41 @@ const MobileFixPage = () => {
                     <span className="text-gray-600">Estimated Time</span>
                     <span className="font-bold">{pricing?.estimatedTime}</span>
                   </div>
-                  <div className="flex justify-between items-center pb-3 border-b">
-                    <span className="text-gray-600">Base Price</span>
-                    <span className="font-bold">₹{pricing?.price}</span>
-                  </div>
-                  {isFirstTime && (
-                    <div className="flex justify-between items-center pb-3 border-b text-green-600">
-                      <span>First Order Discount (15%)</span>
-                      <span className="font-bold">
-                        -₹{Math.round(pricing?.price * 0.15)}
-                      </span>
-                    </div>
+                  {pricing?.isCustomPricing ? (
+                    <>
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <p className="text-orange-800 font-medium mb-2">
+                          Custom Device Pricing
+                        </p>
+                        <p className="text-sm text-orange-700">
+                          The exact price for your device will be determined by our technician during inspection. Our technician will provide you with a quote before starting any work.
+                        </p>
+                      </div>
+                      <div className="flex justify-between items-center text-2xl font-bold text-orange-600">
+                        <span>Final Price</span>
+                        <span>To Be Determined</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center pb-3 border-b">
+                        <span className="text-gray-600">Base Price</span>
+                        <span className="font-bold">₹{pricing?.price}</span>
+                      </div>
+                      {isFirstTime && (
+                        <div className="flex justify-between items-center pb-3 border-b text-green-600">
+                          <span>First Order Discount (15%)</span>
+                          <span className="font-bold">
+                            -₹{Math.round(pricing?.price * 0.15)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center text-2xl font-bold text-blue-600">
+                        <span>Final Price</span>
+                        <span>₹{calculateFinalPrice()}</span>
+                      </div>
+                    </>
                   )}
-                  <div className="flex justify-between items-center text-2xl font-bold text-blue-600">
-                    <span>Final Price</span>
-                    <span>₹{calculateFinalPrice()}</span>
-                  </div>
                 </div>
 
                 <div className="mb-6">
@@ -847,6 +952,72 @@ const MobileFixPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Custom Brand Modal */}
+      {showCustomBrandModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full"
+          >
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">
+              Enter Custom Brand & Model
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Please enter your phone's brand name and model name below.
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Brand Name
+                </label>
+                <input
+                  type="text"
+                  value={customBrandName}
+                  onChange={(e) => setCustomBrandName(e.target.value)}
+                  placeholder="e.g., Xiaomi, Google, Nothing"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  autoFocus
+                />
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Model Name
+                </label>
+                <input
+                  type="text"
+                  value={customModelName}
+                  onChange={(e) => setCustomModelName(e.target.value)}
+                  placeholder="e.g., Poco X6, Pixel 7, Nothing Phone 2"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowCustomBrandModal(false);
+                  setCustomBrandName("");
+                  setCustomModelName("");
+                }}
+                className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCustomBrandSubmit}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+              >
+                Continue
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
