@@ -27,6 +27,8 @@ import "./MobileFixPage.css";
 const API = import.meta.env.VITE_API_URL || window.location.origin;
 
 const MOBILEFIX_SERVICE_NAME = "mobilefix";
+const OTHERS_BRAND_NAME = "Others";
+const CUSTOM_ID_PREFIX = "custom";
 
 const MobileFixPage = () => {
   const { user } = useAuth();
@@ -223,7 +225,7 @@ const MobileFixPage = () => {
     }
     
     // Check if "Others" brand is selected
-    if (brand.name === "Others") {
+    if (brand.name === OTHERS_BRAND_NAME) {
       setShowCustomBrandModal(true);
       return;
     }
@@ -243,7 +245,7 @@ const MobileFixPage = () => {
       return;
     }
     
-    const othersBrand = brands.find((b) => b.name === "Others");
+    const othersBrand = brands.find((b) => b.name === OTHERS_BRAND_NAME);
     if (!othersBrand) {
       toast.error("Others brand not found");
       return;
@@ -256,8 +258,13 @@ const MobileFixPage = () => {
     };
     
     // Create a custom model object with the user's input
+    // Using crypto.randomUUID for better uniqueness if available, fallback to timestamp
+    const uniqueId = typeof crypto !== 'undefined' && crypto.randomUUID 
+      ? crypto.randomUUID() 
+      : `${CUSTOM_ID_PREFIX}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     const customModel = {
-      _id: `custom-${Date.now()}`,
+      _id: uniqueId,
       name: customModelName.trim(),
       brandId: othersBrand._id,
       isCustom: true
@@ -335,8 +342,8 @@ const MobileFixPage = () => {
     }
 
     const isCustomPricing = pricing.isCustomPricing || false;
-    const isFirstTimeBooking = isFirstTime && !isCustomPricing;
-    const firstTimeDiscount = isFirstTimeBooking ? 0.15 : 0;
+    const isFirstTimeBooking = isFirstTime; // Keep first-time eligibility for custom pricing
+    const firstTimeDiscount = isFirstTimeBooking && !isCustomPricing ? 0.15 : 0;
     const basePrice = isCustomPricing ? 0 : pricing.price;
     const discountAmount = Math.round(basePrice * firstTimeDiscount);
     const finalPrice = basePrice - discountAmount;
@@ -361,9 +368,9 @@ const MobileFixPage = () => {
         `${selectedBrand.name} ${selectedModel.name}`,
       ],
       metadata: {
-        brandId: selectedModel.isCustom ? "custom" : selectedBrand._id,
+        brandId: selectedModel.isCustom ? `${CUSTOM_ID_PREFIX}-brand` : selectedBrand._id,
         brandName: selectedBrand.name,
-        modelId: selectedModel.isCustom ? "custom" : selectedModel._id,
+        modelId: selectedModel.isCustom ? `${CUSTOM_ID_PREFIX}-model` : selectedModel._id,
         modelName: selectedModel.name,
         serviceType: selectedService.id,
         estimatedTime: pricing.estimatedTime,
