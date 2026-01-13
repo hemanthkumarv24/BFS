@@ -104,58 +104,21 @@ function AppContent() {
               </>
             }
           />
-          <Route path="/cars" element={<ProtectedRoute><CarsPage /></ProtectedRoute>} />
-          <Route path="/bikes" element={<ProtectedRoute><BikesPage /></ProtectedRoute>} />
-          <Route
-            path="/laundry"
-            element={
-              // <ComingSoon
-              //   title="Laundry Service Coming Soon"
-              //   message="We’re working hard to bring laundry services to you. Stay tuned!"
-              // />
-              <LaundryPage />
-            }
-          />
-          <Route path="/helmets" element={<ProtectedRoute><HelmetPage /></ProtectedRoute>} />
-          <Route path="/car-wash-deals/:category" element={<ProtectedRoute><CarWashDeals /></ProtectedRoute>} />
-          <Route
-            path="/bike-wash-deals/:category"
-            element={<ProtectedRoute><BikeWashDeals /></ProtectedRoute>}
-          />
-          {/* <Route
-            path="/laundry-deals/:category"
-            element={
-              <ComingSoon
-                title="Laundry Service Coming Soon"
-                message="We’re working hard to bring laundry services to you. Stay tuned!"
-              />
-            }
-          /> */}
-
-          <Route path="/laundry-deals/:category" element={<ProtectedRoute><LaundryDeals /></ProtectedRoute>} />
-          <Route
-            path="/helmet-wash-deals/:category"
-            element={<ProtectedRoute><HelmetWashDeals /></ProtectedRoute>}
-          />
-          <Route
-            path="/services/puc-certificate"
-            element={<ProtectedRoute><PUCCertificatePage /></ProtectedRoute>}
-          />
-          <Route
-            path="/services/insurance-assistance"
-            element={<ProtectedRoute><InsuranceAssistancePage /></ProtectedRoute>}
-          />
-          <Route
-            path="/services/vehicle-checkup"
-            element={<ProtectedRoute><VehicleCheckupPage /></ProtectedRoute>}
-          />
-          <Route
-            path="/vehicle-accessories"
-            element={<ProtectedRoute><VehicleAccessoriesPage /></ProtectedRoute>}
-          />
-          <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/services-browser" element={<ServicesBrowser />} />
+          <Route path="/cars" element={<ComingSoon />} />
+          <Route path="/bikes" element={<ComingSoon />} />
+          <Route path="/laundry" element={<ComingSoon />} />
+          <Route path="/helmets" element={<ComingSoon />} />
+          <Route path="/car-wash-deals/:category" element={<ComingSoon />} />
+          <Route path="/bike-wash-deals/:category" element={<ComingSoon />} />
+          <Route path="/laundry-deals/:category" element={<ComingSoon />} />
+          <Route path="/helmet-wash-deals/:category" element={<ComingSoon />} />
+          <Route path="/services/puc-certificate" element={<ComingSoon />} />
+          <Route path="/services/insurance-assistance" element={<ComingSoon />} />
+          <Route path="/services/vehicle-checkup" element={<ComingSoon />} />
+          <Route path="/vehicle-accessories" element={<ComingSoon />} />
+          <Route path="/cart" element={<ComingSoon />} />
+          <Route path="/services" element={<ComingSoon />} />
+          <Route path="/services-browser" element={<ComingSoon />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
@@ -170,7 +133,7 @@ function AppContent() {
           <Route path="/impersonate" element={<Impersonate />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/team" element={<TeamPage />} />
-          <Route path="/green&clean" element={<ProtectedRoute><GreenCleanCart /></ProtectedRoute>} />
+          <Route path="/green&clean" element={<ComingSoon />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route
             path="/admin"
@@ -184,22 +147,19 @@ function AppContent() {
               </ProtectedAdminRoute>
             }
           />
-          <Route path="green" element={<ProtectedRoute><GreenandClean /></ProtectedRoute>} />
-          <Route path="/services/:categoryName" element={<ProtectedRoute><ServicePage /></ProtectedRoute>} />
-          <Route
-            path="/services/category/:categoryName"
-            element={<ProtectedRoute><ServiceByCategory /></ProtectedRoute>}
-          />
-          <Route path="/movers-packers" element={<ProtectedRoute><MoversPackersPage /></ProtectedRoute>} />
-          <Route path="/key-services" element={<ProtectedRoute><KeyServicesPage /></ProtectedRoute>} />
-          <Route path="/painting-services" element={<ProtectedRoute><PaintingServicesPage /></ProtectedRoute>} />
-          <Route path="/autofix" element={<ProtectedRoute><AutoFixPage /></ProtectedRoute>} />
-          <Route path="/flower-categories" element={<ProtectedRoute><FlowerCategoriesPage /></ProtectedRoute>} />
-          <Route path="/flower-services/:category" element={<ProtectedRoute><FlowerServicesPage /></ProtectedRoute>} />
-          <Route path="/flowers" element={<FlowerLandingPage />} />
-          <Route path="/flower-products" element={<FlowerProductsPage />} />
-          <Route path="/flower-product/:id" element={<FlowerProductDetailPage />} />
-          <Route path="/mobilefix" element={<ProtectedRoute><MobileFixPage /></ProtectedRoute>} />
+          <Route path="green" element={<ComingSoon />} />
+          <Route path="/services/:categoryName" element={<ComingSoon />} />
+          <Route path="/services/category/:categoryName" element={<ComingSoon />} />
+          <Route path="/movers-packers" element={<ComingSoon />} />
+          <Route path="/key-services" element={<ComingSoon />} />
+          <Route path="/painting-services" element={<ComingSoon />} />
+          <Route path="/autofix" element={<ComingSoon />} />
+          <Route path="/flower-categories" element={<ComingSoon />} />
+          <Route path="/flower-services/:category" element={<ComingSoon />} />
+          <Route path="/flowers" element={<ComingSoon />} />
+          <Route path="/flower-products" element={<ComingSoon />} />
+          <Route path="/flower-product/:id" element={<ComingSoon />} />
+          <Route path="/mobilefix" element={<ComingSoon />} />
           <Route
             path="/admin/users"
             element={
