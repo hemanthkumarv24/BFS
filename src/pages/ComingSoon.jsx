@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Clock, Mail, Phone, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function ComingSoon({ title = 'Coming Soon', message = 'This service will be available shortly.' }) {
+export default function ComingSoon() {
   const navigate = useNavigate();
   
   return (
