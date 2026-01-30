@@ -8,7 +8,7 @@ This directory contains documentation for the BFS (Bubble Flash Services) Androi
 
 #### [Android Logo Replacement Guide](./ANDROID_LOGO_REPLACEMENT_GUIDE.md) 📖
 **Comprehensive documentation covering:**
-- Complete list of all 26+ image files that need BFS logo
+- Complete list of all 30 files (26 image files + 4 configuration files) that need review/replacement
 - Exact file paths and required dimensions for each icon
 - Detailed explanation of Android icon types (launcher, round, adaptive, splash)
 - Step-by-step replacement process

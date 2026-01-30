@@ -105,7 +105,7 @@ These may need to be reviewed/updated:
 
 After replacing icons:
 
-- [ ] Clean build (`./gradlew clean` or Build > Clean Project)
+- [ ] Clean build (in Android Studio: Build > Clean Project, or run `cd android && ./gradlew clean`)
 - [ ] Sync Capacitor (`npm run sync:android`)
 - [ ] Rebuild app
 - [ ] Uninstall old app from device/emulator

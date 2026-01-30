@@ -88,7 +88,7 @@ android/app/src/main/res/drawable/splash.png → 320×480 px
 
 ### Adaptive Icons (Foreground)
 - **Safe Zone**: Center 66% (to prevent clipping)
-- **Size**: 108dp but viewable area is ~66dp diameter circle
+- **Size**: Foreground image is 108dp x 108dp, safe zone is ~66dp diameter circle in center
 - **Padding**: 15-20% recommended
 
 ### Splash Screens

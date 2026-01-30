@@ -169,7 +169,7 @@ Located in: `android/app/src/main/res/drawable/splash.png`
 ## Recommended Tools for Generating Icon Sizes
 
 ### 1. **Android Asset Studio (Recommended - Free & Official)**
-**URL**: https://romannurik.github.io/AndroidAssetStudio/
+**URL**: https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html
 
 **Features**:
 - Official tool from Android developers
@@ -220,7 +220,11 @@ Located in: `android/app/src/main/res/drawable/splash.png`
 
 **Example command to resize**:
 ```bash
-# Install ImageMagick first
+# Install ImageMagick first:
+# macOS: brew install imagemagick
+# Ubuntu/Debian: sudo apt-get install imagemagick
+# Windows: Download from https://imagemagick.org/script/download.php
+
 # For regular launcher icons
 convert logo.jpg -resize 48x48 mipmap-mdpi/ic_launcher.png
 convert logo.jpg -resize 72x72 mipmap-hdpi/ic_launcher.png
@@ -260,7 +264,7 @@ npx capacitor-assets generate --android
 - **Foreground**: Main logo with transparency
 - **Background**: Solid color or simple pattern
 - **Safe Zone**: Logo should fit within a circular mask (center 66%)
-- **Total Size**: 108dp x 108dp, but viewable area is ~66dp diameter circle
+- **Total Size**: Foreground image is 108dp x 108dp, safe zone is ~66dp diameter circle in center
 
 ### 3. **Round Icon Design**
 - **Shape**: Circular
