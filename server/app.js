@@ -25,6 +25,7 @@ import vehicleAccessoriesAdminRoutes from './routes/vehicleAccessoriesAdmin.js';
 
 import autofixRoutes from './routes/autofix.js';
 import autofixAdminRoutes from './routes/autofixAdmin.js';
+import whatsappRoutes from './routes/whatsapp.js';
 import dotenv from 'dotenv';
 dotenv.config();
 import { configureCloudinary } from './services/cloudinary.js';
@@ -80,6 +81,9 @@ app.use('/api/admin/vehicle-accessories', vehicleAccessoriesAdminRoutes);
 // AutoFix Pro routes
 app.use('/api/autofix', autofixRoutes);
 app.use('/api/admin/autofix', autofixAdminRoutes);
+
+// WhatsApp bot routes
+app.use('/api/whatsapp', whatsappRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
